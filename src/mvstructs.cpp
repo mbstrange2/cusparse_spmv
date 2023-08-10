@@ -218,6 +218,86 @@ cooMatrix::cooMatrix(std::string filename) {
     mstatus = DeviceOutdated;
 }
 
+cooMatrix::cooMatrix(int _nnz, int _h, int _w, int _fillRandom) {
+
+    // a structure to hold triples
+    typedef struct coord {
+        int row, col;
+        float val;
+    } coord;
+    // vector of values
+    std::vector<coord> nzelems;
+
+    std::default_random_engine generator;
+    std::uniform_int_distribution<> int_distribution_h(0, _h - 1);
+    std::uniform_int_distribution<> int_distribution_w(0, _w - 1);
+    std::uniform_real_distribution<float> float_dist_vals(0.0, 10.0);
+    auto rgen_h = std::bind(int_distribution_h, generator);
+    auto rgen_w = std::bind(int_distribution_w, generator);
+    auto rgen_vals = std::bind(float_dist_vals, generator);
+
+    // the mmio routines have read up until the first entry, so take advantage of it
+    for(int i = 0; i < _nnz; i++){
+        coord tmp = {-1, -1, -1.0f};
+        // std::cerr<<"row: " << tmp.row << " col: " << tmp.col  << " val: " << tmp.val << std::endl;
+        tmp.row = rgen_h();
+        tmp.col = rgen_w();
+        tmp.val = rgen_vals();
+        nzelems.push_back(tmp);
+        // add an element if symmetric - but not repeating the diagonal
+        
+    }
+    // sort the nonzero elements
+    auto comparator = [](coord a, coord b){
+        if(a.row < b.row){
+            return true;
+        } else if(a.row > b.row){
+            return false;
+        } else {
+            if(a.col < b.col){
+                return true;
+            }else{
+                return false;
+            }
+        }
+    };
+    std::sort(nzelems.begin(), nzelems.end(), comparator);
+
+    auto Pred = [](coord a, coord b){
+        if((a.row == b.row) && (a.col == b.col)){
+            return true;
+        }
+        else{
+            return false;
+        }
+    };
+
+    std::unique(nzelems.begin(), nzelems.end(), Pred);
+
+    // allocate space in the matrix class
+    nnz = nzelems.size();
+    h = _h;
+    w = _w;
+
+    std::cout << nnz << h << w << std::endl;
+    std::cout << "MEK" << std::endl;
+    alloc();
+
+    // add the nonzero elements
+    for(int i = 0;i<nnz;i++){
+        auto c = nzelems[i];
+        rowIndexHostPtr[i] = c.row;
+        colIndexHostPtr[i] = c.col;
+        valHostPtr[i] = c.val;
+    }
+    // print it
+    // print();
+    // set the iterator to 0, and the memstatus to device outdated
+    ixPtr = 0;
+    // assume we start with the device buffers outdated
+    mstatus = DeviceOutdated;
+}
+
 cooMatrix::~cooMatrix() {
     cleanup();
 }

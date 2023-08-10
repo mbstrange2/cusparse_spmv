@@ -130,39 +130,44 @@ void printSqlResult(std::string host, std::string device, std::string matrix,
 }
 
 int main(int argc, char const *argv[]) {
-  if (argc < 6) {
-    std::cerr << "No table name given!" << std::endl;
-    exit(1);
-  }
-  if (argc < 5) {
-    std::cerr << "No expermient id given!" << std::endl;
-    exit(1);
-  }
-  if (argc < 4) {
-    std::cerr << "Error: no hostname given!" << std::endl;
-    exit(1);
-  }
-  if (argc < 3) {
-    std::cerr << "Error: no matrix name given!" << std::endl;
-    exit(1);
-  }
-  if (argc < 2) {
-    std::cerr << "Error: no matrix file specified!" << std::endl;
-    exit(1);
-  }
-  std::string mfname(argv[1]);
-  std::string mname(argv[2]);
-  std::string hostname(argv[3]);
-  std::string exID(argv[4]);
-  std::string table(argv[5]);
-  std::cerr << "Matrix filename: " << mfname << std::endl;
-  std::cerr << "Matrix name: " << mname << std::endl;
-  std::cerr << "Hostname: " << hostname << std::endl;
-  std::cerr << "Experiment ID: " << exID << std::endl;
-  std::cerr << "SQL table: " << table << std::endl;
+//   if (argc < 6) {
+//     std::cerr << "No table name given!" << std::endl;
+//     exit(1);
+//   }
+//   if (argc < 5) {
+//     std::cerr << "No expermient id given!" << std::endl;
+//     exit(1);
+//   }
+//   if (argc < 4) {
+//     std::cerr << "Error: no hostname given!" << std::endl;
+//     exit(1);
+//   }
+//   if (argc < 3) {
+//     std::cerr << "Error: no matrix name given!" << std::endl;
+//     exit(1);
+//   }
+//   if (argc < 2) {
+//     std::cerr << "Error: no matrix file specified!" << std::endl;
+//     exit(1);
+//   }
+//   std::string mfname(argv[1]);
+//   std::string mname(argv[2]);
+//   std::string hostname(argv[3]);
+//   std::string exID(argv[4]);
+//   std::string table(argv[5]);
+//   std::cerr << "Matrix filename: " << mfname << std::endl;
+//   std::cerr << "Matrix name: " << mname << std::endl;
+//   std::cerr << "Hostname: " << hostname << std::endl;
+//   std::cerr << "Experiment ID: " << exID << std::endl;
+//   std::cerr << "SQL table: " << table << std::endl;
+
+  int h = 64;
+  int w = 64;
+  int nnz = 100;
 
   // input matrix
-  cooMatrix cm(mfname);
+//   cooMatrix cm(mfname);
+  cooMatrix cm(nnz, h, w, 1);
 
   // input vector
   denseVector v(cm.getWidth());
@@ -191,11 +196,11 @@ int main(int argc, char const *argv[]) {
   //   std::cerr << "Median: " << times[(times.size() + 1) / 2] << std::endl;
   // }
 
-  printSqlResult(hostname, devname, mname, exID, table, times);
+//   printSqlResult(hostname, devname, mname, exID, table, times);
 
   // the result
-  // std::cerr<<"result after: "<<std::endl;
-  // result.print();
+  std::cerr<<"result after: "<<std::endl;
+  result.print();
 
   // clean up
   cusparseDestroy(handle);

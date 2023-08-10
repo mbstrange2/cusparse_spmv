@@ -66,6 +66,7 @@ class cooMatrix
 {
 public:
     cooMatrix(int, int, int);
+    cooMatrix(int, int, int, int);
     cooMatrix(std::string);
     ~cooMatrix();
     void push(int, int, float);
